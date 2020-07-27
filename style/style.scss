@@ -1,0 +1,135 @@
+/*メディアクエリ・breakpoints
+------------------------------------------------------*/
+$breakpoints: (
+    'xs': 'screen and (min-width: 414px)',
+    'sm': 'screen and (min-width: 576px)',
+    'md': 'screen and (min-width: 768px)',
+    'lg': 'screen and (min-width: 992px)',
+    'xl': 'screen and (min-width: 1200px)'
+) !default;
+
+@mixin mq($breakpoint: xs) {
+    @media #{map-get($breakpoints, $breakpoint)} {
+        @content;
+    }
+}
+
+
+.inside{
+    padding: 0 !important;
+    margin:0 !important;
+}
+
+
+/*extract-field:抽出条件
+------------------------------------------------------*/
+.extract-field{
+    $root:"extract";
+
+    padding: 15px 0;
+
+    .#{$root}__label{
+        padding: 0 12px;
+        width: 100%;
+        margin-bottom: 10px;
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin: 0 0 3px;
+            padding: 0;
+        }
+    }
+
+    .#{$root}__description{
+        display: block;
+        margin: 0;
+        padding: 0;
+    }
+
+    .#{$root}__input{
+        padding: 0 12px;
+    }
+
+    select {
+        width: 100%;
+        padding: 4px 8px;
+        margin: 0;
+        box-sizing: border-box;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    @include mq('md'){
+        display: flex;
+
+        .#{$root}__label{
+            width: calc(20% - 18px);
+            z-index: 1;
+            margin: 0;
+        }
+
+        .#{$root}__description{
+            margin: 0 0 3px;
+        }
+
+        &::before{
+            content:"";
+            display: block;
+            position: absolute;
+            z-index: 0;
+            background: #F9F9F9;
+            border-color: #E1E1E1;
+            border-style: solid;
+            border-width: 0 1px 0 0;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 20%;
+        }
+
+        .#{$root}__input{
+            width: 80%;
+        }
+
+    }
+}
+
+
+/*extract-table:条件選択
+------------------------------------------------------*/
+.extract-table{
+    background-color: #fff;
+    border-spacing: 0;
+    border-radius: 0;
+    table-layout: auto;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    clear: both;
+    box-sizing: content-box;
+
+    td{
+        border: 0 none;
+        padding: 4px;
+
+        &.param {
+            width: 35%;
+        }
+
+        &.operator {
+            width: 20%;
+        }
+
+        &.add {
+            width: 40px;
+        }
+
+        &.remove {
+            width: 28px;
+            vertical-align: middle;
+        }
+    }
+
+
+}
