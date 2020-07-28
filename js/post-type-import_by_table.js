@@ -4,11 +4,27 @@ let plugin_dir_url = j$('#plugin_dir_url').val();
 
 
 /*
+* 読み込み時の処理
+*/
+j$(function(){
+    //ページ読み込み時
+    if(inits){
+        insert_rows(inits);
+    }
+
+    //セレクトボックス変更時
+    j$(document).on('change', 'select[name^="extract_field_group"]', function(){
+        let data_num = this.data('row');
+        change_select_option(data_num);
+    });
+});
+
+/*
 * セレクトボックス(param)変更時にセレクトボックス(value)のオプションをセッティングする
 */
-let change_select_option = (element) => {
-    let name = j$('select[name^="extract_field_group"]');
-    let data_num = name.data('row');
+let change_select_option = (data_num) => {
+    let element = j$(`#extract_field_group-location-group_${data_num}-rule_${data_num}-param`);
+    let name = j$(`#acf_field_group-location-group_${data_num}-rule_${data_num}-value`);
     name.prop("disabled", true);
 
     j$.ajax({
@@ -70,6 +86,8 @@ let insert_row = (init, num) => {
     let name = j$('table[class="extract-table"]');
 
     name.children('tbody').append(html);
+
+    change_select_option(num);
 }
 
 let get_options = (items, selected) => {
@@ -89,20 +107,3 @@ let check_selected = (item, selected) => {
         return ` selected `;
     }
 }
-
-/*
-* 読み込み時の処理
-*/
-j$(function(){
-    if(inits){
-        insert_rows(inits);
-    }
-
-    //ページ読み込み時
-    change_select_option(j$('select[name^="extract_field_group"]'));
-
-    //セレクトボックス変更時
-    j$(document).on('change', 'select[name^="extract_field_group"]', function(){
-        change_select_option(this);
-    });
-});
