@@ -119,8 +119,13 @@ function insert_custom_fields()
         let operators = '.json_encode(get_extract_operators()).';
 
         let inits = [
-            {"param": "post_type", "operator": "!=", "value": ""},
-            {"param": "post_type", "operator": "!=", "value": ""}
+            {
+                "group": 0,
+                "rule": 0,
+                "param": "post_type",
+                "operator": "!=",
+                "value": "recruit"
+            }
         ]
 
 	</script>
@@ -158,35 +163,55 @@ function get_options(array $options): string
     return $value;
 }
 
+function get_array_post_types() :array
+{
+    $obj_post_types = get_post_types('',['public' => true,'_builtin' => false]);
+    foreach($obj_post_types as $obj_post_type){
+        $post_types[] = [
+            'key' => $obj_post_type->name,
+            'value' => $obj_post_type->label
+        ];
+    }
 
+    return $post_types;
+}
 
-// function get_post_types() :array
-// {
-//     return [
+function get_post_categories() :array
+{
+    if($taxonomies_obj = get_object_taxonomies( 'post' )){
+        foreach($taxonomies_obj as $taxonomy_name){
+            $taxonomies[] = [
+                'key' => get_taxonomy($taxonomy_name),
+                'value' => $taxonomy_obj->label
+            ];
+        }
 
-//     ];
-// }
+        return $taxonomies;
+    }
+}
 
-// function get_post_categories() :array
-// {
-//     return [
+function get_statuses() :array
+{
+    $init_statuses = [
+        'publish' => '公開済み',
+        'pending' => 'レビュー待ち',
+        'draft' => '下書き',
+        'auto-draft' => 'auto-draft',
+        'future' => '予約済み',
+        'private' => '非公開',
+        'inherit' => 'inherit',
+        'trash' => 'ゴミ箱にある投稿',
+    ];
 
-//     ];
-// }
+    foreach($init_statuses as $key => $value){
+        $statuses[] = [
+            'key' => $key,
+            'value' => $value
+        ];
+    }
 
-// function get_post_taxonomies() :array
-// {
-//     return [
-
-//     ];
-// }
-
-// function get_pages() :array
-// {
-//     return [
-
-//     ];
-// }
+    return $statuses;
+}
 
 function loop_optgroup($optgroup_params) :string
 {

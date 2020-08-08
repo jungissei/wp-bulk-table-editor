@@ -18,26 +18,24 @@ require_once( get_upper_dirname(1) . '/layout/functions.php' );
 $data = new data;
 $draw = new draw;
 
-header('Content-type: text/plain; charset= UTF-8');
-if(isset($_POST['extract_field_group'])){
-    switch ($_POST['extract_field_group']) {
+header("Content-Type: application/json; charset=UTF-8");
+if(isset($_POST['param'])){
+    switch ($_POST['param']) {
         case 'post_type':
-            $data_array = $data->get_post_types();
+            $items = get_array_post_types();
             break;
         case 'post_status':
-            $data_array = $data->get_post_status();
+            $items = get_post_status();
             break;
         case 'post_category':
-            $data_array = $data->get_terms('category');
-            break;
-        case 'page':
-            $data_array = $data->get_post_types();
+            $items = get_terms('category');
             break;
         default:
-            $data_array = [];
+            $items = [];
     }
-    echo get_options($data_array);
+    echo json_encode($items);
 
 }else{
     echo 'Ajax is failed at extraction.php';
 }
+exit;
