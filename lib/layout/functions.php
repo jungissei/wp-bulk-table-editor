@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Regist Post Type: import_by_table
+ * Regist Post Type: wp_bulk_table_editor
 */
-function register_cpt_import_by_table()
+function register_wp_bulk_table_editor()
 {
     $plugin_name = PLUGIN_NAME;
     $plugin_post_type = PLUGIN_POST_TYPE;
@@ -39,10 +39,12 @@ function register_cpt_import_by_table()
 
 	register_post_type( $plugin_post_type, $args );
 }
-add_action( 'init', 'register_cpt_import_by_table' );
+add_action( 'init', 'register_wp_bulk_table_editor' );
+
+
 
 /**
- * Add Custom fields : import_by_table custom post type post edit page
+ * Add Custom fields : wp-bulk-table-editor custom post type post edit page
 */
 function add_custom_fields()
 {
@@ -57,6 +59,7 @@ function add_custom_fields()
 add_action('admin_menu', 'add_custom_fields');
 
 
+
 /**
  * Enqueue scripts
 */
@@ -67,8 +70,7 @@ function enqueue_import_by_table_scripts($hook) {
         || $hook == 'post.php' && PLUGIN_POST_TYPE == $post->post_type
     ) {
         wp_enqueue_style( PLUGIN_POST_TYPE, PLUGIN_DIR_URL.'/style/style.css' );
-        wp_enqueue_style( 'handsontable', PLUGIN_DIR_URL.'/style/handsontable.full.min.css' );
-        wp_enqueue_script( 'handsontable', PLUGIN_DIR_URL.'/js/post-type-import_by_table.js', ['jquery'], '', true);
+        wp_enqueue_script( 'extraction', PLUGIN_DIR_URL.'/js/extraction.js', ['jquery'], '', true);
     }
 }
 add_action( 'admin_enqueue_scripts', 'enqueue_import_by_table_scripts' );
@@ -99,15 +101,10 @@ function insert_custom_fields()
                 <div>
                     <div>
                         <h4>このフィールドグループを表示する条件</h4>
-                        <table class="extract-table">
-                            <tbody>
-
-                            </tbody>
-                        </table>
-
+                        <div id="HtmlGroups">
+                            <a href="#" class="button add-location-group">ルールを追加</a>
+                        </div>
                     </div>
-                    <h4>または</h4>
-                    <a href="#" class="button add-location-group">ルールを追加</a>
                 </div>
             </div>
         </div>
@@ -118,14 +115,31 @@ function insert_custom_fields()
         let params = '.json_encode(get_extract_params()).';
         let operators = '.json_encode(get_extract_operators()).';
 
-        let inits = [
-            {
-                "group": 0,
-                "rule": 0,
-                "param": "post_type",
-                "operator": "!=",
-                "value": "recruit"
-            }
+        let InitGroups = [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "!=",
+                    "value": "recruit"
+                },
+                {
+                    "param": "post_type",
+                    "operator": "!=",
+                    "value": "recruit"
+                }
+            ],
+            [
+                {
+                    "param": "post_type",
+                    "operator": "!=",
+                    "value": "recruit"
+                },
+                {
+                    "param": "post_type",
+                    "operator": "!=",
+                    "value": "recruit"
+                }
+            ],
         ]
 
 	</script>
@@ -133,7 +147,8 @@ function insert_custom_fields()
 }
 
 
-
+/* Options of extractions
+------------------------------------------------------*/
 function get_extract_params(): array
 {
     return [
@@ -149,18 +164,6 @@ function get_extract_operators() :array
         ['key' => '==', 'value' => '等しい'],
         ['key' => '!=', 'value' => '等しくない'],
     ];
-}
-
-function get_options(array $options): string
-{
-    $value = '';
-    foreach($options as $option){
-        $value .= '<option value="'.$option['key'].'">';
-        $value .= $option['value'];
-        $value .= '</option>';
-    }
-
-    return $value;
 }
 
 function get_array_post_types() :array
@@ -211,94 +214,4 @@ function get_statuses() :array
     }
 
     return $statuses;
-}
-
-function loop_optgroup($optgroup_params) :string
-{
-    $value = '';
-    foreach($optgroup_params as $optgroup_key => $params){
-        $value .= '<optgroup label="'.$optgroup_key.'">';
-        $value .= loop_options($params);
-        $value .='</optgroup>';
-    }
-    echo $value;
-}
-
-function loop_options($params) :string
-{
-    $value = '';
-    foreach($params as $param_key => $param){
-        $value .= '<option value="'.$param.'">';
-        $value .= $param;
-        $value .='</option>';
-    }
-    echo $value;
-}
-
-
-//php file include
-function display_template(string $body_class)
-{
-    $filename = PLUGIN_DIR_PATH.'lib/layout/'.$body_class.'.php';
-    if(file_exists($filename)&&$body_class) include($filename);
-}
-
-//include class files
-$classes = ['data', 'draw', 'save'];
-foreach($classes as $class){
-    $filename = PLUGIN_DIR_PATH.'lib/class/'.$class.'.php';
-    if(file_exists($filename)) include($filename);
-}
-
-
-function get_formats() :array
-{
-    return [
-        'bigint(20)' => '%s',
-        'datetime' => '%s',
-        'longtext' => '%s',
-        'text' => '%s',
-        'varchar(20)' => '%s',
-        'varchar(100)' => '%s',
-        'varchar(200)' => '%s',
-        'varchar(255)' => '%s',
-        'bigint(20) unsigned' => '%d',
-        'int(11)' => '%d',
-    ];
-}
-
-function get_json_col_headers(array $col_headers_array)
-{
-    $col_headers = array_column($col_headers_array, 'Field');
-    return json_encode($col_headers);
-
-}
-
-function get_insert_formats(array $data_types): string
-{
-    $formats = get_formats();
-    foreach($data_types as $data_type){
-        $insert_formats[] = $formats[$data_type];
-    }
-
-    return json_encode($insert_formats);
-}
-
-function get_post_vals(array $conditions): string
-{
-    global $wpdb;
-    $post_type = $conditions['post_type'];
-    $post_vals = $wpdb->get_results( 'SELECT * FROM wp_posts WHERE post_type = "'.$post_type.'" AND post_status = "publish"', ARRAY_A );
-    return json_encode($post_vals);
-}
-
-function get_js_values(array $js_values)
-{
-    echo '<script type="text/javascript">';
-
-    foreach($js_values as $key => $js_value){
-        echo 'const '.$key.' = '.$js_value.';';
-    }
-
-    echo '</script>';
 }

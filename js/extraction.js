@@ -1,82 +1,171 @@
+/* Base
+------------------------------------------------------*/
 jQuery.noConflict();
-const j$ = jQuery;
-const plugin_dir_url = j$('#plugin_dir_url').val();
+let j$ = jQuery;
+let plugin_dir_url = j$('#plugin_dir_url').val();
 
-j$(function(){
-    j$(document).on('change', 'select[name="condition[extraction]"]', function(){
-        j$.ajax({
-            url:plugin_dir_url + 'lib/ajax/extraction.php',
-            type:'POST',
-            data:{
-                'extraction':j$(this).val()
-            }
-        })
-        .done( (data) => {
-            const name = j$('select[name="condition[post_type]"]');
-            insert_form_tags(name, data);
-        })
-        .fail( (data) => {
-            console.log('Ajax is failed at extraction.js');
-        })
+
+
+/* Work Timing
+------------------------------------------------------*/
+/*
+* Working when pege is loaded
+*/
+j$(() => {
+    j$('#HtmlGroups').prepend(
+        GetHtmlInitGroups(InitGroups)
+    );
+
+    j$('.extract-table > tbody > tr').hover(() => {
+
     });
-
-    j$(document).on('change', 'select[name="condition[post_type]"]', function(){
-        j$.ajax({
-            url:plugin_dir_url + 'lib/ajax/post_type.php',
-            type:'POST',
-            data:{
-                'post_type':j$(this).val()
-            }
-        })
-        .done( (data) => {
-            const name = j$('select[name="condition[taxonomy]"]');
-            insert_form_tags(name, data);
-        })
-        .fail( (data) => {
-            console.log('Ajax is failed at extraction.js');
-        })
-    });
-
-    j$(document).on('change', 'select[name="condition[taxonomy]"]', function(){
-        j$.ajax({
-            url:plugin_dir_url + 'lib/ajax/taxonomy.php',
-            type:'POST',
-            data:{
-                'taxonomy':j$(this).val()
-            }
-        })
-        .done( (data) => {
-            const name = j$('select[name="condition[term]"]');
-            insert_form_tags(name, data);
-        })
-        .fail( (data) => {
-            console.log('Ajax is failed at extraction.js');
-        })
-    });
-
-    // j$(document).on('change', 'select[name="condition[meta_info]"]', function(){
-    //     j$.ajax({
-    //         url:plugin_dir_url + 'lib/ajax/meta_info.php',
-    //         type:'POST',
-    //         data:{
-    //             'taxonomy':j$(this).val()
-    //         }
-    //     })
-    //     .done( (data) => {
-    //         const name = j$('select[name="condition[term]"]');
-    //         insert_form_tags(name, data);
-    //     })
-    //     .fail( (data) => {
-    //         console.log('Ajax is failed at extraction.js');
-    //     })
-    // });
-
 });
 
-function insert_form_tags(name, data){
-    if(name.length){
-        name.closest('.form__item').replaceWith(data);
-    }else{
-        j$('.form__extraction').append(data);
+
+/*
+* Working when pege is loaded
+*/
+
+
+
+
+/* logic
+------------------------------------------------------*/
+/*
+* Get HTML of groups extractions
+* @param InitGroups array : initial value of groups extractions
+*/
+let GetHtmlInitGroups = (InitGroups) =>{
+    let HtmlGroups = "";
+
+    for (const GroupKey in InitGroups) {
+        HtmlGroups += GetHtmlInitRules(InitGroups[GroupKey], GroupKey);
     }
+
+    return HtmlGroups;
+}
+
+
+
+/*
+* Get HTML of rule extractions which belongs to group
+* @param InitRules array :initial value of rule extractions
+* @param GroupKey int    :group key number
+*/
+let GetHtmlInitRules = (InitRules, GroupKey) =>{
+    let HtmlRules = "";
+
+    for (const RuleKey in InitRules) {
+        // GroupKey, RuleKey, InitRules[RuleKey]
+        HtmlRules += GetHtmlRule(
+            init = {
+                "group" : GroupKey,
+                "rule" : RuleKey,
+                "value" : InitRules[RuleKey]
+            }
+        );
+    }
+
+    return GetHtmlGroupTable(GroupKey, HtmlRules);
+}
+
+
+
+/*
+* Get HTML of group extractions
+* @param GroupRow int     : group key number
+* @param HtmlRules string : html of rules
+*/
+let GetHtmlGroupTable = (GroupRow, HtmlRules) =>{
+    return `
+    <div class="rule-group" data-id="group_${GroupRow}">
+        <table class="extract-table">
+            <tbody>
+                ${HtmlRules}
+            </tbody>
+        </table>
+        <h4>または</h4>
+    </div>
+    `;
+}
+
+
+
+/*
+* Get HTML of rile extractions
+* @param init array : initial value of rule
+*/
+let GetHtmlRule = (init) =>{
+    let GroupRow = init.group;
+    let RuleRow = init.rule;
+
+    return `
+    <tr data-id="rule_${RuleRow}">
+        <td class="param">
+            <select
+                id="extract_field_group-location-group_${GroupRow}-rule_${RuleRow}-param"
+                name="extract_field_group[location][group_${GroupRow}][rule_${RuleRow}][param]"
+                group-row="${GroupRow}" rule-row="${RuleRow}"
+            >
+                ${GetHtmlOptions(params, init.param)}
+            </select>
+        </td>
+        <td class="operator">
+            <select>
+                ${GetHtmlOptions(operators, init.operator)}
+            </select>
+        </td>
+        <td class="value">
+            <select
+                id="acf_field_group-location-group_${GroupRow}-rule_${RuleRow}-value"
+                name="acf_field_group[location][group_${GroupRow}][rule_${RuleRow}][value]"
+                group-row="${GroupRow}" rule-row="${RuleRow}"
+            >
+
+            </select>
+        </td>
+        <td class="add"><a href="#" class="button add-location-rule">and</a></td>
+        <td class="remove"><a href="#" class="acf-icon -minus remove-location-rule"></a></td>
+    </tr>
+    `;
+}
+
+
+
+/*
+* Get HTML of option tags
+* @param items array     : related option info
+* @param selected string : selected value
+*/
+let GetHtmlOptions = (items, selected) =>{
+    let html = ``;
+    for (const key in items) {
+        html += `
+            <option
+                value="${items[key].key}"
+                ${GetOptAttrSelected(items[key].key, selected)}
+            >
+                ${items[key].value}
+            </option>
+        `;
+    }
+
+    return html;
+}
+
+
+
+/*
+* Get selected of option tag attribute
+* @param item string     : item value
+* @param selected string : seledted value
+*/
+let GetOptAttrSelected = (item, selected) => {
+    if(!selected)
+        return "";
+
+    if(item == selected)
+        return "selected";
+
+    return "";
 }
