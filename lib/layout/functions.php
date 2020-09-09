@@ -101,7 +101,7 @@ function insert_custom_fields()
                 <div>
                     <div>
                         <h4>このフィールドグループを表示する条件</h4>
-                        <div id="HtmlGroups">
+                        <div id="htmlGroups">
                             <a href="#" class="button add-location-group">ルールを追加</a>
                         </div>
                     </div>

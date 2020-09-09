@@ -1,87 +1,101 @@
-/* Base
-------------------------------------------------------*/
+/*
+Sumally
+---------------------------
+# Base
+# Work Timing
+
+# logic
+## Related to initial extractions group
+## Hover related
+
+*/
+
+/* # Base */
 jQuery.noConflict();
 let j$ = jQuery;
 let plugin_dir_url = j$('#plugin_dir_url').val();
 
 
 
-/* Work Timing
-------------------------------------------------------*/
+/* # Work Timing */
 /*
 * Working when pege is loaded
 */
 j$(() => {
-    j$('#HtmlGroups').prepend(
-        GetHtmlInitGroups(InitGroups)
-    );
+    //Add init extraction groups table
+    addHtmlInitGroups('#htmlGroups');
 
-    j$('.extract-table > tbody > tr').hover(() => {
-
-    });
+    //Detect hover Rule
+    detectRuleHover('.extract-table > tbody > tr');
 });
 
 
+
+/* # logic */
+/* ## Related to initial extractions group */
+
 /*
-* Working when pege is loaded
+* Add HTML of groups extractions
+* @param selector string : ID name of the element to be added
 */
+let addHtmlInitGroups = (selector) =>{
+    j$(selector).prepend(
+        getHtmlInitGroups(InitGroups)
+    );
+}
 
 
 
-
-/* logic
-------------------------------------------------------*/
 /*
 * Get HTML of groups extractions
-* @param InitGroups array : initial value of groups extractions
+* @param initGroups array : initial value of groups extractions
 */
-let GetHtmlInitGroups = (InitGroups) =>{
-    let HtmlGroups = "";
+let getHtmlInitGroups = (initGroups) =>{
+    let htmlGroups = "";
 
-    for (const GroupKey in InitGroups) {
-        HtmlGroups += GetHtmlInitRules(InitGroups[GroupKey], GroupKey);
+    for (const groupKey in initGroups) {
+        htmlGroups += getHtmlInitRules(initGroups[groupKey], groupKey);
     }
 
-    return HtmlGroups;
+    return htmlGroups;
 }
 
 
 
 /*
 * Get HTML of rule extractions which belongs to group
-* @param InitRules array :initial value of rule extractions
-* @param GroupKey int    :group key number
+* @param initRules array :initial value of rule extractions
+* @param groupKey int    :group key number
 */
-let GetHtmlInitRules = (InitRules, GroupKey) =>{
-    let HtmlRules = "";
+let getHtmlInitRules = (initRules, groupKey) =>{
+    let htmlRules = "";
 
-    for (const RuleKey in InitRules) {
-        // GroupKey, RuleKey, InitRules[RuleKey]
-        HtmlRules += GetHtmlRule(
+    for (const ruleKey in initRules) {
+        htmlRules += getHtmlRule(
             init = {
-                "group" : GroupKey,
-                "rule" : RuleKey,
-                "value" : InitRules[RuleKey]
+                "group" : groupKey,
+                "rule" : ruleKey,
+                "value" : initRules[ruleKey]
             }
         );
     }
 
-    return GetHtmlGroupTable(GroupKey, HtmlRules);
+    return getHtmlGroupTable(groupKey, htmlRules);
 }
 
 
 
 /*
 * Get HTML of group extractions
-* @param GroupRow int     : group key number
-* @param HtmlRules string : html of rules
+* @param groupRow int     : group key number
+* @param htmlRules string : html of rules
 */
-let GetHtmlGroupTable = (GroupRow, HtmlRules) =>{
+let getHtmlGroupTable = (groupRow, htmlRules) =>{
     return `
-    <div class="rule-group" data-id="group_${GroupRow}">
+    <div class="rule-group" data-group="${groupRow}">
         <table class="extract-table">
             <tbody>
-                ${HtmlRules}
+                ${htmlRules}
             </tbody>
         </table>
         <h4>または</h4>
@@ -95,31 +109,31 @@ let GetHtmlGroupTable = (GroupRow, HtmlRules) =>{
 * Get HTML of rile extractions
 * @param init array : initial value of rule
 */
-let GetHtmlRule = (init) =>{
-    let GroupRow = init.group;
-    let RuleRow = init.rule;
+let getHtmlRule = (init) =>{
+    let groupRow = init.group;
+    let ruleRow = init.rule;
 
     return `
-    <tr data-id="rule_${RuleRow}">
+    <tr data-group="${groupRow}" data-rule="${ruleRow}">
         <td class="param">
             <select
-                id="extract_field_group-location-group_${GroupRow}-rule_${RuleRow}-param"
-                name="extract_field_group[location][group_${GroupRow}][rule_${RuleRow}][param]"
-                group-row="${GroupRow}" rule-row="${RuleRow}"
+                id="extract_field_group-location-group_${groupRow}-rule_${ruleRow}-param"
+                name="extract_field_group[location][group_${groupRow}][rule_${ruleRow}][param]"
+                group-row="${groupRow}" rule-row="${ruleRow}"
             >
-                ${GetHtmlOptions(params, init.param)}
+                ${getHtmlOptions(params, init.param)}
             </select>
         </td>
         <td class="operator">
             <select>
-                ${GetHtmlOptions(operators, init.operator)}
+                ${getHtmlOptions(operators, init.operator)}
             </select>
         </td>
         <td class="value">
             <select
-                id="acf_field_group-location-group_${GroupRow}-rule_${RuleRow}-value"
-                name="acf_field_group[location][group_${GroupRow}][rule_${RuleRow}][value]"
-                group-row="${GroupRow}" rule-row="${RuleRow}"
+                id="acf_field_group-location-group_${groupRow}-rule_${ruleRow}-value"
+                name="acf_field_group[location][group_${groupRow}][rule_${ruleRow}][value]"
+                group-row="${groupRow}" rule-row="${ruleRow}"
             >
 
             </select>
@@ -137,13 +151,13 @@ let GetHtmlRule = (init) =>{
 * @param items array     : related option info
 * @param selected string : selected value
 */
-let GetHtmlOptions = (items, selected) =>{
+let getHtmlOptions = (items, selected) =>{
     let html = ``;
     for (const key in items) {
         html += `
             <option
                 value="${items[key].key}"
-                ${GetOptAttrSelected(items[key].key, selected)}
+                ${getOptAttrSelected(items[key].key, selected)}
             >
                 ${items[key].value}
             </option>
@@ -160,7 +174,7 @@ let GetHtmlOptions = (items, selected) =>{
 * @param item string     : item value
 * @param selected string : seledted value
 */
-let GetOptAttrSelected = (item, selected) => {
+let getOptAttrSelected = (item, selected) => {
     if(!selected)
         return "";
 
@@ -168,4 +182,35 @@ let GetOptAttrSelected = (item, selected) => {
         return "selected";
 
     return "";
+}
+
+
+
+/* ## Rule hover related */
+/*
+* Detect Rule hover
+* @param selector string : Selector of hover target rules
+*/
+let detectRuleHover = (selector) => {
+    j$(selector).hover((e) => {
+        if(isRuleHover(e)){
+            console.log('hoversします');
+        }
+    });
+}
+
+
+
+/*
+* Hovering conditional branch
+* @param e object : Elements of Hover Selector
+*/
+let isRuleHover = (e) => {
+    let groupId = j$(e.currentTarget).attr('data-group');
+    let ruleId = j$(e.currentTarget).attr('data-rule');
+    if(groupId == 0 && ruleId == 0){
+        return false;
+    }
+
+    return true;
 }
