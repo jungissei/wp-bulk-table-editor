@@ -194,7 +194,7 @@ let getOptAttrSelected = (item, selected) => {
 let detectRuleHover = (selector) => {
     j$(selector).hover((e) => {
         if(isRuleHover(e)){
-            console.log('hoversします');
+            //ホバー処理
         }
     });
 }

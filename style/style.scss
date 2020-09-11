@@ -130,6 +130,55 @@ $breakpoints: (
             vertical-align: middle;
         }
     }
+}
 
 
+.extract-table{
+    .remove .acf-icon{
+        visibility: hidden;
+        display: inline-block;
+        height: 28px;
+        width: 28px;
+        border: transparent solid 1px;
+        border-radius: 100%;
+        font-size: 20px;
+        line-height: 21px;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: top;
+        box-sizing: border-box;
+        color: #555d66;
+        border-color: #b5bcc2;
+        background-color: #fff;
+        position: relative;
+        transition: none;
+        cursor: pointer;
+
+        &.-minus::before {
+            content: "\f460";
+        }
+
+        &::before{
+            font-family: dashicons;
+            display: inline-block;
+            line-height: 1;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: inherit;
+            text-transform: none;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 1em;
+            height: 1em;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        &:hover {
+            background: #f7efef;
+            border-color: #a10000;
+            color: #dc3232;
+        }
+    }
 }
