@@ -139,7 +139,7 @@ let getHtmlRule = (init) =>{
             </select>
         </td>
         <td class="add"><a href="#" class="button add-location-rule">and</a></td>
-        <td class="remove"><a href="#" class="acf-icon -minus remove-location-rule"></a></td>
+        <td class="remove"><a href="#" class="remove-icon -minus remove-location-rule"></a></td>
     </tr>
     `;
 }
@@ -192,9 +192,17 @@ let getOptAttrSelected = (item, selected) => {
 * @param selector string : Selector of hover target rules
 */
 let detectRuleHover = (selector) => {
-    j$(selector).hover((e) => {
-        if(isRuleHover(e)){
-            //ホバー処理
+    j$(selector).mouseover(event => {
+        let currTarget = j$(event.currentTarget);
+
+        if(isRuleHover(currTarget)){
+            currTarget.find('.remove-icon').css('visibility', 'visible');
+        }
+    }).mouseout(event => {
+        let currTarget = j$(event.currentTarget);
+
+        if(isRuleHover(currTarget)){
+            currTarget.find('.remove-icon').css('visibility', 'hidden');
         }
     });
 }
@@ -205,9 +213,9 @@ let detectRuleHover = (selector) => {
 * Hovering conditional branch
 * @param e object : Elements of Hover Selector
 */
-let isRuleHover = (e) => {
-    let groupId = j$(e.currentTarget).attr('data-group');
-    let ruleId = j$(e.currentTarget).attr('data-rule');
+let isRuleHover = (currTarget) => {
+    let groupId = currTarget.attr('data-group');
+    let ruleId = currTarget.attr('data-rule');
     if(groupId == 0 && ruleId == 0){
         return false;
     }
