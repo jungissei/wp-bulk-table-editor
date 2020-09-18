@@ -7,6 +7,7 @@ Sumally
 # logic
 ## Related to initial extractions group
 ## Hover related
+## Related working minus button
 
 */
 
@@ -19,14 +20,23 @@ let plugin_dir_url = j$('#plugin_dir_url').val();
 
 /* # Work Timing */
 /*
-* Working when pege is loaded
+* Related adding HTML of initial group table
 */
 j$(() => {
     //Add init extraction groups table
     addHtmlInitGroups('#htmlGroups');
+});
 
-    //Detect hover Rule
-    detectRuleHover('.extract-table > tbody > tr');
+/*
+* Related minus rule button
+*/
+j$(() => {
+
+    //Detect hover
+    detectRuleHover('.extract-table tr');
+
+    //Detect clicking button
+    detectsMinusButtonClicks('.extract-table a.remove-location-rule');
 });
 
 
@@ -221,4 +231,25 @@ let isRuleHover = (currTarget) => {
     }
 
     return true;
+}
+
+
+/* ## Related working minus button */
+/*
+* Detects minus button clicks
+* @param selector string : Selector of minus button
+*/
+let detectsMinusButtonClicks = (selector) => {
+    j$(selector).on('click', event => {
+        let currTarget = j$(event.currentTarget);
+        removeRuleRow(currTarget);
+    });
+}
+
+/*
+* Remove rule row
+* @param selector string : Elements of Clicked Selector
+*/
+let removeRuleRow = (currTarget) => {
+    currTarget.closest('tr').remove();
 }
