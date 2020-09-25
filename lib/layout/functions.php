@@ -138,7 +138,12 @@ function insert_custom_fields()
                     "param": "post_type",
                     "operator": "!=",
                     "value": "recruit"
-                }
+                },
+                {
+                    "param": "post_type",
+                    "operator": "!=",
+                    "value": "recruit"
+                },
             ],
         ]
 
